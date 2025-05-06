@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ 
+<mapper namespace="com.minibank.cst.cust.repository.CustRepository">
+    <insert id="registerCust" parameterType="com.minibank.cst.cust.dto.RegisterCustInDto">
+		<![CDATA[
+		INSERT INTO CUST_M(CUST_NO, CUST_NM, CUST_ENNM, CPNO, EMADDR)
+		VALUES (#{custNo}, #{custNm}, #{custEnnm}, #{cpno}, #{emaddr})
+		]]>
+    </insert>
+    
+<select id="retrieveCust" resultType="com.minibank.cst.cust.dto.RetrieveCustOutDto" parameterType="String">
+		<![CDATA[
+		SELECT CUST_NO, CUST_NM, CUST_ENNM, CPNO, EMADDR
+		FROM CUST_M
+		WHERE CUST_NO = #{custNo}
+		]]>
+    </select>
+    
+  <select id="retrieveCustList" resultType="com.minibank.cst.cust.dto.RetrieveCustOutDto" parameterType="com.minibank.cst.cust.dto.RetrieveCustListInDto">
+		<![CDATA[
+		SELECT CUST_NO, CUST_NM, CUST_ENNM, CPNO, EMADDR
+		FROM CUST_M
+		WHERE CUST_NM = #{custNm}
+		]]>
+    </select>
+    
+   <update id="updateCust" parameterType="com.minibank.cst.cust.dto.UpdateCustInDto">
+		<![CDATA[
+		UPDATE CUST_M
+		SET CUST_NM = #{custNm},
+		    CUST_ENNM = #{custEnnm},
+		    CPNO = #{cpno},
+		    EMADDR = #{emaddr}
+		WHERE CUST_NO = #{custNo}
+		]]>
+    </update>
+ 	
+ 	<delete id="deleteCust" parameterType="String">
+ 		<![CDATA[
+ 		DELETE FROM CUST_M 
+ 		WHERE CUST_NO = #{custNo}
+ 		]]>
+ 	</delete>
+</mapper>

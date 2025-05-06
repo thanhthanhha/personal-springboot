@@ -1,0 +1,79 @@
+plugins {
+    id 'org.springframework.boot' version '3.1.4'
+    id 'io.spring.dependency-management' version '1.1.3'
+    id 'java'
+}
+
+group = 'com.minibank'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot 기본 의존성
+    implementation 'org.springframework.boot:spring-boot-starter'
+    
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
+	implementation 'commons-collections:commons-collections:3.2'
+	
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Tiles-JSP
+    implementation 'org.apache.tiles:tiles-core:3.0.8'
+    implementation 'org.apache.tiles:tiles-api:3.0.8'
+    implementation 'org.apache.tiles:tiles-servlet:3.0.8'
+    implementation 'org.apache.tiles:tiles-jsp:3.0.8'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+	
+	//Json
+   	implementation 'com.google.code.gson:gson:2.8.5'
+   	
+    // JSTL
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+
+    // Embedded Tomcat
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    // Spring Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Boot DevTools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+   	//Swagger
+   	//implementation 'io.springfox:springfox-swagger2:2.7.0'
+   	//implementation 'io.springfox:springfox-swagger-ui:2.7.0'
+
+   	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+    // 테스트 의존성
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
+	
+	//DB
+	implementation 'org.postgresql:postgresql:42.2.5'
+	runtimeOnly 'org.hsqldb:hsqldb'
+
+	//Logging
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+    
+	//Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	
+	//DevOn Tester
+	implementation files('libs/uta_springboot.jar')
+	implementation files('libs/devon-tester-aide-0.1.jar')
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

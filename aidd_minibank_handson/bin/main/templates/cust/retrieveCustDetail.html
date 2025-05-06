@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>고객 상세 조회</title>
+	<script type="text/javascript" th:src="@{/js/cust/retrieveCustDetail.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>[고객상세조회]</span>
+    </h2>
+    
+    <form id="form1" onsubmit="return false;">
+        <table class="global_table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width:16%;" />
+                <col style="width:84%;" />
+            </colgroup>
+            <tr>
+                <th class="width135">고객번호*</th>
+                <td>
+                    <input class="txt" id="custNo" name="custNo" type="text" value="" />
+                    <input id="btnSearch" type="button" value="조회" class="search_btn"/>
+                </td>
+            </tr>
+        </table>
+    </form>            
+    <br />
+
+    <h3>고객정보</h3>  
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">고객번호</th>
+				<td name="custNo"></td>
+			</tr>
+			<tr>
+				<th class="width100">고객한글명</th>
+				<td name="custNm"></td>
+				<th class="width100">고객영문명</th>
+				<td name="custEnnm"></td>
+			</tr>
+			<tr>
+				<th class="width100">휴대전화번호</th>
+				<td name="cpno"></td>
+				<th class="width100">이메일주소</th>
+				<td name="emaddr"></td>
+			</tr>
+        </tbody>
+    </table>
+    
+    <h3>이체한도정보</h3>  
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">1일이체한도금액</th>
+				<td name="d1TrnsfLimtAmt"></td>
+				<th class="width100">1회이체한도금액</th>
+				<td name="ti1TrnsfLimtAmt"></td>
+			</tr>
+        </tbody>
+    </table>
+    <br />
+	</div>
+</section>
+</body>
+</html>

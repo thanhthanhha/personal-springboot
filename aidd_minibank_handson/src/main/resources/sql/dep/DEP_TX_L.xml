@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.minibank.dep.depTx.repository.DepTxLRepository">
+ 	
+ 	<insert id="registerDepTx" parameterType="com.minibank.dep.depTx.dto.RegisterDepTxInDto">
+    	<![CDATA[
+ 		INSERT INTO DEP_TX_L(ACNO, TX_DT, TX_TIME, TX_CD, TX_AMT)
+ 		VALUES(#{acno}, #{txDt}, #{txTime}, #{txCd}, #{txAmt})
+ 		]]>
+ 	</insert>
+ 	
+</mapper>

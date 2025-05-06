@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>고객 등록</title>
+	<script type="text/javascript" th:src="@{/js/cust/registerCust.js}" charset="UTF-8"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>[고객등록]</span>
+    </h2>
+
+    <form id="form1" onsubmit="return false;">
+        <table class="global_table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width:20%;" />
+                <col style="width:30%;" />
+                <col style="width:20%;" />
+                <col style="width:30%;" />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th class="width135">고객한글명*</th>
+                    <td><input class="txt" id="custNm" name="custNm" type="text" /></td>
+                    <th class="width135">고객영문명</th>
+                    <td><input class="txt" id="custEnnm" name="custEnnm" type="text" /></td>
+                </tr>
+                <tr>
+                    <th class="width135">전화번호</th>
+                    <td><input id="cpno" name="cpno" type='text'/></td>
+                    <th class="width135">이메일주소</th>
+                    <td><input id="emaddr" name="emaddr" type='text'/></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <br />
+    <div class="g_tablebtn">
+        <input id="btnCreate" type="button" value="저장" class="g_btn_bg" />
+    </div>
+</div>
+</section>
+</body>
+</html>

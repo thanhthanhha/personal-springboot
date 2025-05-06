@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>고객 조회</title>
+	<script type="text/javascript" th:src="@{/js/cust/updateCust.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>[고객수정]</span>
+    </h2>
+
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">고객번호</th>
+				<td id="custNo" name="custNo"></td>
+			</tr>
+			<tr>
+				<th class="width100">고객한글명</th>
+				<td><input id="custNm" name="custNm" type='text'></td>
+				<th class="width100">고객영문명</th>
+				<td><input id="custEnnm" name="custEnnm" type='text'></td>
+			</tr>
+			<tr>
+				<th class="width100">휴대전화번호</th>
+				<td><input id="cpno" name="cpno" type='text'></td>
+				<th class="width100">이메일주소</th>
+				<td><input id="emaddr" name="emaddr" type='text'></td>
+			</tr>
+        </tbody>
+    </table>
+    <br />
+    <div class="g_tablebtn">
+        <input id="btnUpdate" type="button" value="저장" class="g_btn_bg" />
+    </div>
+	</div>
+</section>
+</body>
+</html>

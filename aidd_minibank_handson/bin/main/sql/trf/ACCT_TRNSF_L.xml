@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.minibank.trf.acctTrnsf.repository.AcctTrnsfRepository">
+ 	
+ 	<select id="retrieveAcctTrnsfList" resultType="com.minibank.trf.acctTrnsf.dto.RetrieveAcctTrnsfListOutDto"
+            parameterType="String">
+        <![CDATA[
+	 		SELECT to_char(to_timestamp(TRNSF_DT, 'YYYYMMDD'), 'YYYY-MM-DD') AS TRNSF_DT
+	 			, to_char(to_timestamp(TRNSF_TIME, 'HH24MISS'), 'HH24:MI:SS') AS TRNSF_TIME
+	 			, DPST_ACNO
+	 			, RECVR_NM
+	 			, TRNSF_AMT
+	 			, DPST_SUMRY
+	 			, WTHDR_ACCO_SUMRY
+			FROM ACCT_TRNSF_L
+			WHERE WTHDR_ACNO = #{wthdrAcno}
+ 		]]>
+ 	</select>
+ 	
+</mapper>

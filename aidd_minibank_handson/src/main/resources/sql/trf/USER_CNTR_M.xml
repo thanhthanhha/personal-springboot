@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.minibank.trf.userCntr.repository.UserCntrMRepository">
+	<select id="retrieveUserCntr" resultType="com.minibank.trf.userCntr.dto.RetrieveUserCntrOutDto"
+            parameterType="String">
+        <![CDATA[
+	 		SELECT D1_TRNSF_LIMT_AMT, TI1_TRNSF_LIMT_AMT
+			FROM USER_CNTR_M
+			WHERE USER_ID = #{userId}
+ 		]]>
+ 	</select>
+ 	
+ 	<select id="retrieveUserCntrByCustNo" resultType="com.minibank.trf.userCntr.dto.RetrieveUserCntrOutDto"
+            parameterType="String">
+        <![CDATA[
+	 		SELECT D1_TRNSF_LIMT_AMT, TI1_TRNSF_LIMT_AMT
+			FROM USER_CNTR_M
+			WHERE CUST_NO = #{custNo}
+ 		]]>
+ 	</select>
+ 	
+ 	<insert id="registerUserCntr" parameterType="com.minibank.trf.userCntr.dto.RegisterUserCntrInDto">
+    	<![CDATA[
+ 		INSERT INTO USER_CNTR_M 
+ 		VALUES(#{userId}, #{custNo}, #{userPswd}, #{d1TrnsfLimtAmt}, #{ti1TrnsfLimtAmt})
+ 		]]>
+ 	</insert>
+ 	
+ 	<update id="updateUserCntr" parameterType="com.minibank.trf.userCntr.dto.UpdateUserCntrInDto">
+    	<![CDATA[
+    	UPDATE USER_CNTR_M
+    	SET D1_TRNSF_LIMT_AMT = #{d1TrnsfLimtAmt},
+    		TI1_TRNSF_LIMT_AMT = #{ti1TrnsfLimtAmt}
+    	WHERE USER_ID = #{userId}
+ 		]]>
+ 	</update>
+ 	
+ 	<delete id="deleteUserCntr" parameterType="String">
+    	<![CDATA[
+	 	DELETE FROM USER_CNTR_M 
+	 	WHERE USER_ID = #{userId}
+ 		]]>
+ 	</delete>
+ 	
+</mapper>

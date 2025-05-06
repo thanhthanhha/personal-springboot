@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>계좌조회</title>
+	<script type="text/javascript" th:src="@{/js/acct/registerAcct.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>계좌개설</span>
+    </h2>
+
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">고객번호</th>
+				<td id="custNo" name="custNo"></td>
+				<!--<td><input id="custNo" name="custNo"></td>-->
+				<th class="width100">고객한글명</th>
+				<td id="custNm" name="custNm"></td>
+			</tr>
+			<tr>
+				<th class="width100">계좌번호</th>
+				<td><input id="acno" name="acno"></td>
+				<th class="width100">계좌비밀번호</th>
+				<td><input id="accoPswd" name="accoPswd"></td>
+			</tr>
+        </tbody>
+    </table>
+    <h4><span>계좌번호 형식 : 숫자3자리-숫자3자리-숫자6자리(ex.123-456-123456)</span></h4>
+    <br />
+    <div class="g_tablebtn">
+        <input id="btnRegister" type="button" value="저장" class="g_btn_bg" />
+    </div>
+	</div>
+</section>
+</body>
+</html>

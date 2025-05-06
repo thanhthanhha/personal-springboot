@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header>
+    <div id="header">
+        <div>
+            <div class="logo">
+                <img th:src="@{/images/logo.png}" />
+            </div>
+            <div>
+                <input type="hidden" id="contextPath" th:value="@{/}" />
+                <input type="hidden" id="transferApiUrl" th:value="${@environment.getProperty('transfer.api.url')}" />
+                <input type="hidden" id="accountApiUrl" th:value="${@environment.getProperty('account.api.url')}" />
+                <input type="hidden" id="customerApiUrl" th:value="${@environment.getProperty('customer.api.url')}" />
+                <input type="hidden" id="acctApiUrl" th:value="${@environment.getProperty('acct.api.url')}" />
+                <input type="hidden" id="custinfoApiUrl" th:value="${@environment.getProperty('custinfo.api.url')}" />
+                <input type="hidden" id="custApiUrl" th:value="${@environment.getProperty('cust.api.url')}" />
+                <input type="hidden" id="cntrApiUrl" th:value="${@environment.getProperty('cntr.api.url')}" />
+                <input type="hidden" id="txApiUrl" th:value="${@environment.getProperty('tx.api.url')}" />
+                <input type="hidden" id="trnsfApiUrl" th:value="${@environment.getProperty('trnsf.api.url')}" />
+            </div>
+        </div>
+    </div>
+
+    <div id="menu" class="container">
+        <li id="catalogMenu"><a th:href="@{/main}">Catalog</a></li>
+        <li id="custMenu">
+            <a th:href="@{/main}">고객 관리</a>
+            <ul>
+                <li><a th:href="@{/cust/view/registerCust}">고객 등록</a></li>
+                <li><a th:href="@{/cust/view/retrieveCust}">고객 조회</a></li>
+                <li><a th:href="@{/cust/view/retrieveCustList}">고객 목록 조회</a></li>
+                <li><a th:href="@{/cust/view/retrieveCustDetail}">고객 상세 조회</a></li>
+                <!--
+                <li><a th:href="@{/customer/view/retrieveCustomerList}">고객 목록 조회</a></li>
+                <li><a th:href="@{/customer/view/updateCustomer}">고객 수정</a></li>
+                <li><a th:href="@{/customer/view/deleteCustomer}">고객 삭제</a></li>
+                -->
+            </ul>
+        </li>
+        <!--<li id="customerMenu">
+            <a th:href="@{/main}">고객 관리</a>
+            <ul>
+                <li><a th:href="@{/customer/view/createCustomer}">고객 등록</a></li>
+                <li><a th:href="@{/customer/view/retrieveCustomer}">고객 조회</a></li>
+                <li><a th:href="@{/customer/view/retrieveCustomerList}">고객 목록 조회</a></li>
+                <li><a th:href="@{/customer/view/updateCustomer}">고객 수정</a></li>
+                <li><a th:href="@{/customer/view/deleteCustomer}">고객 삭제</a></li>
+            </ul>
+        </li>-->
+        <li id="acctMenu">
+            <a th:href="@{/main}">계좌 관리</a>
+            <ul>
+				<!--<li><a th:href="@{/acct/view/registerAcct}">계좌 개설</a></li>-->
+                <li><a th:href="@{/acct/view/retrieveAcct}">계좌 조회</a></li>
+                <li><a th:href="@{/acct/view/retrieveAcctList}">계좌 목록 조회</a></li>
+                <li><a th:href="@{/acct/view/depositAcct}">입금</a></li>
+                <li><a th:href="@{/acct/view/withdrawAcct}">출금</a></li>
+            </ul>
+        </li>
+        <!--<li id="accountMenu">
+            <a th:href="@{/main}">계좌 관리</a>
+            <ul>
+                <li><a th:href="@{/account/view/createAccount}">계좌 개설</a></li>
+                <li><a th:href="@{/accout/view/retrieveAcct}">계좌 개설</a></li>
+                <li><a th:href="@{/account/view/deposit}">입금</a></li>
+                <li><a th:href="@{/account/view/withdraw}">출금</a></li>
+                <li><a th:href="@{/account/view/retrieveTransactionHistory}">입출금 이력 조회</a></li>
+            </ul>
+        </li>-->
+        <li id="trnsfMenu">
+            <a th:href="@{/main}">계좌 이체</a>
+            <ul>
+                <!--<li><a th:href="@{/transfer/view/transfer}">당행 이체</a></li>
+                <li><a th:href="@{/transfer/view/retrieveTransferHistory}">이체 이력 조회</a></li>-->
+                <li><a th:href="@{/trnsf/view/transferAcct}">당행 이체</a></li>
+            </ul>
+        </li>
+    </div>
+    <script th:src="@{/js/jquery-1.11.1.js}"></script>
+    <script>
+        $(function() {
+            var cqrsEnable = $('#cqrsEnable').val();
+            if(cqrsEnable == "true"){
+                $(".cqrsTab").show();
+            } else {
+                $(".cqrsTab").hide();
+            }
+        });
+    </script>
+</header>

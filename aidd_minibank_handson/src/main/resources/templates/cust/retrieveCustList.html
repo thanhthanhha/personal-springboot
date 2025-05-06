@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>고객 목록 조회</title>
+	<script type="text/javascript" th:src="@{/js/cust/retrieveCustList.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>[고객목록조회]</span>
+    </h2>
+    <form id="form1" onsubmit="return false;">
+        <table class="global_table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width:16%;" />
+                <col style="width:84%;" />
+            </colgroup>
+            <tr>
+                <th class="width135">고객한글명*</th>
+                <td>
+                    <input class="txt" id="custNm" name="custNm" type="text" value="" />
+                    <input id="btnSearch" type="button" value="조회" class="search_btn"/>
+                </td>
+            </tr>
+        </table>
+    </form>            
+    <br />
+    <table width="1200" border="3" cellpadding="0" cellspacing="1" class="search_results" id="table">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+		</colgroup>
+		<tbody id="custList">
+			<tr>
+				<th>고객번호</th>
+				<th>고객영문명</th>
+				<th>휴대전화번호</th>
+				<th>이메일주소</th>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+</section>
+</body>
+</html>

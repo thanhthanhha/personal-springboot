@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>당행이체</title>
+	<script type="text/javascript" th:src="@{/js/trnsf/transferAcct.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container">
+    <br />
+    <h2>
+        <span>당행이체</span>
+    </h2>
+    
+    <h3>
+        <span>출금정보</span>
+    </h3>
+    <form id="form1" onsubmit="return false;">
+        <table class="global_table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width:16%;" />
+                <col style="width:84%;" />
+            </colgroup>
+            <tr>
+                <th class="width135">계좌번호</th>
+                <td>
+                    <input class="txt" id="acno" name="acno" type="text" value="" />
+                    <input id="btnSearch" type="button" value="조회" class="search_btn"/>
+                </td>
+            </tr>
+        </table>
+    </form>            
+    <br />
+	
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">고객번호</th>
+				<td id="custNo" name="custNo"></td>
+				<th class="width100">고객한글명</th>
+				<td id="custNm" name="custNm"></td>
+			</tr>
+			<tr>
+				<th class="width100">계좌잔액</th>
+				<td id="accoBal" name="accoBal"></td>
+			</tr>
+			<tr>
+				<th class="width100">1일이체한도금액</th>
+				<td id="d1TrnsfLimtAmt" name="d1TrnsfLimtAmt"></td>
+				<th class="width100">1회이체한도금액</th>
+				<td id="ti1TrnsfLimtAmt" name="ti1TrnsfLimtAmt"></td>
+			</tr>
+        </tbody>
+    </table>
+    <br />
+    
+    <h3>
+        <span>입금정보</span>
+    </h3>
+    <table class="global_table" cellpadding="0" cellspacing="0">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th class="width100">입금계좌번호</th>
+				<td><input id="dpstAcno" name="dpstAcno"></input></td>
+				<th class="width100">이체금액</th>
+				<td><input type="number" id="trnsfAmt" name="trnsfAmt"></input></td>
+			</tr>
+			<tr>
+				<th class="width100">받는분 메모</th>
+				<td><input id="dpstSumry" name="dpstSumry"></input></td>
+			</tr>
+			<tr>
+				<th class="width100">내통장 메모</th>
+				<td><input id="wthdrAccoSumry" name="wthdrAccoSumry"></input></td>
+			</tr>
+        </tbody>
+    </table>
+    <br />
+    <!--<div class="g_tablebtn">-->
+        <input id="btnTransfer" type="button" value="이체" class="g_btn_bg" />
+    <!--</div>-->
+        
+    <!--
+    <h3>이체 한도 정보</h3>
+    <table width="1200" border="3" cellpadding="0" cellspacing="1" class="search_results" id="table">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+        </colgroup>
+        <tbody>
+			<tr>
+				<th>1일 이체 한도</th>
+				<td name="oneDyTrnfLmt"></td>
+				<th>1회 이체 한도</th>
+				<td name="oneTmTrnfLmt"></td>
+			</tr>
+        </tbody>
+    </table>
+    <br />
+    
+    <h3>계좌 정보</h3>
+    <table width="1200" border="3" cellpadding="0" cellspacing="1" class="search_results" id="table">
+        <colgroup>
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+            <col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+			<col style="width:25%;" />
+		</colgroup>
+		<tbody id="accountList">
+			<tr>
+				<th>계좌명</th>
+				<th>계좌번호</th>
+				<th>계좌잔액</th>
+				<th>신규일시</th>
+			</tr>
+		</tbody>
+	</table>
+	-->
+	</div>
+</section>
+</body>
+</html>

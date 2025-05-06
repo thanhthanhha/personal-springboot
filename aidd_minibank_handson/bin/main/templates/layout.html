@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+ 	<head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	    <!-- Meta, title, CSS, favicons, etc. -->
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" href="images/favicon.ico" type="image/ico" />
+	
+	    <title>LG CNS Minibank</title>
+	
+	    <link rel="shortcut icon" href="favicon.ico"/>
+	    <link rel="stylesheet" th:href="@{/css/Default.css}" />
+	    <link rel="stylesheet" th:href="@{/css/xtree.css}" />
+	    <link rel="stylesheet" th:href="@{/css/thickbox.css}" />
+	    <link rel="stylesheet" th:href="@{/css/css.css}" />
+	    <link rel="stylesheet" th:href="@{/css/base.css}" />
+	    <link rel="stylesheet" th:href="@{/css/global_style.css}" />
+	    <link rel="stylesheet" th:href="@{/css/global_layout.css}" />
+	    <link rel="stylesheet" th:href="@{/css/page_style.css}" />
+	    <link rel="stylesheet" th:href="@{/css/page_layout.css}" />
+	    <script th:src="@{/js/jquery-1.11.1.js}"></script>
+	    <script th:src="@{/js/jquery.blockUI.js}"></script>
+	    <script th:src="@{/js/thickbox.js}"></script>
+	    <script th:src="@{/js/My97DatePicker/WdatePicker.js}"></script>
+	    <script th:src="@{/js/json2.js}"></script>
+	    <script th:src="@{/js/common.js}"></script>
+		
+	</head>
+  	<body class="nav-md">
+	  	<div class="container body">
+	      	<div class="main_container">
+			    <div th:replace="fragments/header :: header"></div>
+				<div class="wrap-loading display-none">
+			    	<div><img th:src="@{/images/loading.gif}"/></div>
+				</div>   
+			    <main><div layout:fragment="content"></div></main><br/>
+			    <div th:replace="fragments/footer :: footer"></div>
+			</div>
+		</div>
+  	</body>
+</html>
