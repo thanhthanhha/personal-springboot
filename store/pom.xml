@@ -59,6 +59,12 @@
 	        <artifactId>slf4j-api</artifactId>
 	    </dependency>
 	    
+	    <dependency>
+		    <groupId>org.bgee.log4jdbc-log4j2</groupId>
+		    <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+		    <version>1.16</version>
+		</dependency>
+	    
 	    <!-- Logback implementation -->
 	    <dependency>
 	        <groupId>ch.qos.logback</groupId>
@@ -90,13 +96,27 @@
 	    <dependency>
 	        <groupId>org.mybatis.spring.boot</groupId>
 	        <artifactId>mybatis-spring-boot-starter</artifactId>
+	        <version>3.0.4</version>
 	    </dependency>
 	    
 	    <!-- Database Driver (example for MySQL) -->
-	    <dependency>
-	        <groupId>mysql</groupId>
-	        <artifactId>mysql-connector-java</artifactId>
-	    </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        
+        <dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-ui</artifactId>
+		    <version>1.8.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.hsqldb</groupId>
+		    <artifactId>hsqldb</artifactId>
+		    <version>2.7.2</version>
+		    <scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -104,6 +124,23 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version> <!-- Using an earlier version that might be more compatible with Java 24 -->
+				<configuration>
+					<release>24</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+					<parameters>true</parameters>
+					<fork>true</fork> <!-- This might help with JDK compatibility issues -->
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

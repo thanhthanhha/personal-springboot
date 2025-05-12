@@ -11,8 +11,7 @@
             user_id, 
             image, 
             password, 
-            password_salt, 
-            friendlist_id
+            password_salt
         ) VALUES (
             #{id}, 
             #{name}, 
@@ -20,8 +19,7 @@
             #{user_id}, 
             #{image}, 
             #{password}, 
-            #{password_salt}, 
-            #{friendlist_id, typeHandler=com.realchat.store.common.handler.StringListTypeHandler}
+            #{password_salt}
         )
     </insert>
     
@@ -35,7 +33,6 @@
             <if test="image != null">image = #{image},</if>
             <if test="password != null">password = #{password},</if>
             <if test="password_salt != null">password_salt = #{password_salt},</if>
-            <if test="friendlist_id != null">friendlist_id = #{friendlist_id, typeHandler=com.realchat.store.common.handler.StringListTypeHandler},</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -53,8 +50,7 @@
             name, 
             email, 
             user_id, 
-            image,  
-            friendlist_id
+            image
         FROM users
         <where>
             <if test="id != null and id.size() > 0">
@@ -87,12 +83,6 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="friendlist_id != null and friendlist_id.size() > 0">
-                AND friendlist_id IN
-                <foreach item="item" collection="friendlist_id" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
         </where>
     </select>
     
@@ -122,8 +112,6 @@
         <result property="image" column="image" />
         <result property="password" column="password" />
         <result property="password_salt" column="password_salt" />
-        <result property="friendlist_id" column="friendlist_id" 
-                typeHandler="com.realchat.store.common.handler.StringListTypeHandler" />
     </resultMap>
 
 </mapper>

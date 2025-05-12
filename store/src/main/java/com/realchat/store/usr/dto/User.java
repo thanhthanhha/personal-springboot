@@ -21,12 +21,10 @@ public class User implements Serializable {
     private String image;         // optional since not in schema
     private String password;      // optional
     private String password_salt; // optional
-    private List<String> friendlist_id;
     
     @Builder
     public User(String id, String name, String email, String user_id, 
-               String image, String password, String password_salt, 
-               List<String> friendlist_id) {
+               String image, String password, String password_salt) {
         super();
         this.id = id;
         this.name = name;
@@ -35,6 +33,5 @@ public class User implements Serializable {
         this.image = image;
         this.password = password;
         this.password_salt = password_salt;
-        this.friendlist_id = friendlist_id;
     }
 }
