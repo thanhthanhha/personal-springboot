@@ -4,7 +4,7 @@
 
     <!-- Register a new user -->
     <insert id="registerUser" parameterType="com.realchat.store.usr.dto.User">
-        INSERT INTO users (
+        INSERT INTO app_user (
             id, 
             name, 
             email, 
@@ -21,26 +21,29 @@
             #{password}, 
             #{password_salt}
         )
+        
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+	    </selectKey>
     </insert>
     
     <!-- Update user information -->
     <update id="updateUser" parameterType="com.realchat.store.usr.dto.User">
-        UPDATE users
+        UPDATE app_user
         <set>
             <if test="name != null">name = #{name},</if>
             <if test="email != null">email = #{email},</if>
-            <if test="user_id != null">user_id = #{user_id},</if>
             <if test="image != null">image = #{image},</if>
             <if test="password != null">password = #{password},</if>
             <if test="password_salt != null">password_salt = #{password_salt},</if>
         </set>
-        WHERE id = #{id}
+        WHERE user_id = #{user_id}
     </update>
     
     <!-- Delete a user -->
     <delete id="deleteUser" parameterType="com.realchat.store.usr.dto.User">
-        DELETE FROM users
-        WHERE id = #{id}
+        DELETE FROM app_user
+        WHERE user_id = #{user_id}
     </delete>
     
     <!-- List users based on query parameters -->
@@ -51,7 +54,7 @@
             email, 
             user_id, 
             image
-        FROM users
+        FROM app_user
         <where>
             <if test="id != null and id.size() > 0">
                 id IN
@@ -77,19 +80,13 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="image != null and image.size() > 0">
-                AND image IN
-                <foreach item="item" collection="image" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
         </where>
     </select>
     
     <!-- Authenticate user -->
     <select id="authUser" parameterType="com.realchat.store.usr.dto.UserAuth" resultType="boolean">
         SELECT COUNT(*) > 0
-        FROM users
+        FROM app_user
         WHERE 
             <if test="email != null">
                 email = #{email}
@@ -102,6 +99,49 @@
                 AND password = #{password}
             </if>
     </select>
+    
+    <insert id="addFriend" parameterType="map" resultType="com.realchat.store.usr.dto.UserFriend">
+	    INSERT INTO friend (
+	        user_id, 
+	        friend_id
+	    ) VALUES (
+	        #{user_id}, 
+	        #{friend_id}
+	    )
+	    <selectKey keyProperty="id" resultType="int" order="AFTER">
+	        SELECT SCOPE_IDENTITY() AS id
+	    </selectKey>
+	</insert>
+	
+	<!-- Delete a friend relationship -->
+	<delete id="deleteFriend" parameterType="map">
+	    DELETE FROM friend
+	    WHERE user_id = #{user_id} AND friend_id = #{friend_id}
+	</delete>
+	
+	<!-- Add a new friend request -->
+	<insert id="addFriendRequest" parameterType="map" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+	    INSERT INTO friend_request (
+	        id,
+	        sender_id,
+	        receiver_id,
+	        approved
+	    ) VALUES (
+	        #{id},
+	        #{user_id},
+	        #{friend_id},
+	        false
+	    )
+	    <selectKey keyProperty="id" resultType="String" order="BEFORE">
+	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+	    </selectKey>
+	</insert>
+	
+	<!-- Delete a friend request -->
+	<delete id="deleteFriendRequest" parameterType="map">
+	    DELETE FROM friend_request
+	    WHERE sender_id = #{user_id} AND receiver_id = #{friend_id}
+	</delete>
     
     <!-- Result Map for User -->
     <resultMap id="UserResultMap" type="com.realchat.store.usr.dto.User">
