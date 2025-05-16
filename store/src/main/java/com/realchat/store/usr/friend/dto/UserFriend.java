@@ -1,4 +1,4 @@
-package com.realchat.store.usr.dto;
+package com.realchat.store.usr.friend.dto;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

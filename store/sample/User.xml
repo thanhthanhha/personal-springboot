@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realchat.store.usr.repository.UserRepository">
+
+    <!-- Register a new user -->
+    <insert id="registerUser" parameterType="com.realchat.store.usr.user.dto.User">
+        INSERT INTO app_user (
+            id, 
+            name, 
+            email, 
+            user_id, 
+            image, 
+            password, 
+            password_salt
+        ) VALUES (
+            #{id}, 
+            #{name}, 
+            #{email}, 
+            #{user_id}, 
+            #{image}, 
+            #{password}, 
+            #{password_salt}
+        )
+        
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+	    </selectKey>
+    </insert>
+    
+    <!-- Update user information -->
+    <update id="updateUser" parameterType="com.realchat.store.usr.user.dto.User">
+        UPDATE app_user
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="password != null">password = #{password},</if>
+        </set>
+        WHERE user_id = #{user_id}
+    </update>
+    
+    <!-- Delete a user -->
+    <delete id="deleteUser" parameterType="String">
+        DELETE FROM app_user
+        WHERE user_id = #{user_id}
+    </delete>
+    
+    <!-- List users based on query parameters -->
+    <select id="listUser" parameterType="com.realchat.store.usr.user.dto.UserQuery" resultType="com.realchat.store.usr.user.dto.User">
+        SELECT 
+            id, 
+            name, 
+            email, 
+            user_id, 
+            image
+        FROM app_user
+        <where>
+            <if test="id != null and id.size() > 0">
+                id IN
+                <foreach item="item" collection="id" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="name != null and name.size() > 0">
+                AND name IN
+                <foreach item="item" collection="name" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="email != null and email.size() > 0">
+                AND email IN
+                <foreach item="item" collection="email" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="user_id != null and user_id.size() > 0">
+                AND user_id IN
+                <foreach item="item" collection="user_id" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <!-- Authenticate user -->
+    <select id="authUser" parameterType="com.realchat.store.usr.user.dto.UserAuth" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM app_user
+        WHERE 
+            <if test="email != null">
+                email = #{email}
+            </if>
+            <if test="user_id != null">
+                <if test="email != null">AND</if> 
+                user_id = #{user_id}
+            </if>
+            <if test="password != null">
+                AND password = #{password}
+            </if>
+    </select>
+    
+    <insert id="addFriend" resultType="com.realchat.store.usr.dto.UserFriend">
+	    INSERT INTO friend (
+	        user_id, 
+	        friend_id
+	    ) VALUES (
+	        #{user_id}, 
+	        #{friend_id}
+	    )
+	    <selectKey keyProperty="id" resultType="int" order="AFTER">
+	        SELECT SCOPE_IDENTITY() AS id
+	    </selectKey>
+	</insert>
+	
+	<select id="getFriend" resultType="com.realchat.store.usr.dto.UserFriend">
+	    SELECT 
+	        id,
+	        user_id,
+	        friend_id,
+	        created_at
+	    FROM 
+	        friend
+	    WHERE 
+	        user_id = #{user_id} AND friend_id = #{friend_id}
+	</select>
+	
+	<select id="listFriends" resultType="com.realchat.store.usr.dto.UserFriend">
+	    SELECT 
+	        id,
+	        user_id,
+	        friend_id,
+	        created_at
+	    FROM 
+	        friend
+	    WHERE 
+	        user_id = #{user_id}
+	</select>
+	
+	<!-- Delete a friend relationship -->
+	<delete id="deleteFriend">
+	    DELETE FROM friend
+	    WHERE user_id = #{user_id} AND friend_id = #{friend_id}
+	</delete>
+	
+	<!-- Add a new friend request -->
+	<insert id="addFriendRequest" parameterType="om.realchat.store.usr.dto.UserFriendRequest" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+	    INSERT INTO friend_request (
+	        id,
+	        sender_id,
+	        receiver_id,
+	        approved
+	    ) VALUES (
+	        #{id},
+	        #{sender_id},
+	        #{receiver_id},
+	        false
+	    )
+	    <selectKey keyProperty="id" resultType="String" order="BEFORE">
+	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+	    </selectKey>
+	</insert>
+	
+	<!-- Update a new friend request -->
+	<update id="updateFriendRequest" parameterType="com.realchat.store.usr.dto.UserFriendRequest" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+        UPDATE friend_request
+        <set>
+            <if test="approved != null">approved = #{approved},</if>
+        </set>
+        WHERE sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+	</update>
+	
+		<!-- Find a specific friend request -->
+	<select id="getFriendRequest" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+	    SELECT 
+	        id,
+	        sender_id,
+	        receiver_id,
+	        approved,
+	        created_at
+	    FROM 
+	        friend_request
+	    WHERE 
+	        sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+	</select>
+	
+	<!-- List all pending friend requests for a user -->
+	<select id="listPendingFriendRequests" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+	    SELECT 
+	        id,
+	        sender_id,
+	        receiver_id,
+	        approved,
+	        created_at
+	    FROM 
+	        friend_request
+	    WHERE 
+	        receiver_id = #{user_id} AND approved = FALSE
+	</select>
+	
+	<!-- List all sent friend requests by a user -->
+	<select id="listSentFriendRequests" resultType="com.realchat.store.usr.dto.UserFriendRequest">
+	    SELECT 
+	        id,
+	        sender_id,
+	        receiver_id,
+	        approved,
+	        created_at
+	    FROM 
+	        friend_request
+	    WHERE 
+	        sender_id = #{user_id}
+	</select>
+	
+	<!-- Delete a friend request -->
+	<delete id="deleteFriendRequest">
+	    DELETE FROM friend_request
+	    WHERE sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+	</delete>
+    
+    <!-- Result Map for User -->
+    <resultMap id="UserResultMap" type="com.realchat.store.usr.user.dto.User">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="user_id" column="user_id" />
+        <result property="image" column="image" />
+        <result property="password" column="password" />
+        <result property="password_salt" column="password_salt" />
+        <result property="created_at" column="created_at" />
+    </resultMap>
+    
+    <resultMap id="UserResultMap" type="com.realchat.store.usr.dto.UserFriendRequest">
+        <id property="id" column="id" />
+        <result property="sender_id" column="sender_id" />
+        <result property="receiver_id" column="receiver_id" />
+        <result property="approved" column="approved" />
+        <result property="created_at" column="created_at" />
+    </resultMap>
+    
+    <resultMap id="UserResultMap" type="com.realchat.store.usr.dto.UserFriend">
+        <id property="id" column="id" />
+        <result property="user_id" column="user_id" />
+        <result property="friend_id" column="friend_id" />
+        <result property="created_at" column="created_at" />
+    </resultMap>
+
+</mapper>

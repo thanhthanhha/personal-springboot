@@ -3,7 +3,10 @@
 <mapper namespace="com.realchat.store.usr.repository.UserRepository">
 
     <!-- Register a new user -->
-    <insert id="registerUser" parameterType="com.realchat.store.usr.dto.User">
+    <insert id="registerUser" parameterType="com.realchat.store.usr.user.dto.User">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+        </selectKey>
         INSERT INTO app_user (
             id, 
             name, 
@@ -21,14 +24,10 @@
             #{password}, 
             #{password_salt}
         )
-        
-        <selectKey keyProperty="id" resultType="String" order="BEFORE">
-	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
-	    </selectKey>
     </insert>
     
     <!-- Update user information -->
-    <update id="updateUser" parameterType="com.realchat.store.usr.dto.User">
+    <update id="updateUser" parameterType="com.realchat.store.usr.user.dto.User">
         UPDATE app_user
         <set>
             <if test="name != null">name = #{name},</if>
@@ -41,13 +40,13 @@
     </update>
     
     <!-- Delete a user -->
-    <delete id="deleteUser" parameterType="com.realchat.store.usr.dto.User">
+    <delete id="deleteUser" parameterType="String">
         DELETE FROM app_user
         WHERE user_id = #{user_id}
     </delete>
     
     <!-- List users based on query parameters -->
-    <select id="listUser" parameterType="com.realchat.store.usr.dto.UserQuery" resultType="com.realchat.store.usr.dto.User">
+    <select id="listUser" parameterType="com.realchat.store.usr.user.dto.UserQuery" resultType="com.realchat.store.usr.user.dto.User">
         SELECT 
             id, 
             name, 
@@ -84,7 +83,7 @@
     </select>
     
     <!-- Authenticate user -->
-    <select id="authUser" parameterType="com.realchat.store.usr.dto.UserAuth" resultType="boolean">
+    <select id="authUser" parameterType="com.realchat.store.usr.user.dto.UserAuth" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM app_user
         WHERE 
@@ -100,51 +99,8 @@
             </if>
     </select>
     
-    <insert id="addFriend" parameterType="map" resultType="com.realchat.store.usr.dto.UserFriend">
-	    INSERT INTO friend (
-	        user_id, 
-	        friend_id
-	    ) VALUES (
-	        #{user_id}, 
-	        #{friend_id}
-	    )
-	    <selectKey keyProperty="id" resultType="int" order="AFTER">
-	        SELECT SCOPE_IDENTITY() AS id
-	    </selectKey>
-	</insert>
-	
-	<!-- Delete a friend relationship -->
-	<delete id="deleteFriend" parameterType="map">
-	    DELETE FROM friend
-	    WHERE user_id = #{user_id} AND friend_id = #{friend_id}
-	</delete>
-	
-	<!-- Add a new friend request -->
-	<insert id="addFriendRequest" parameterType="map" resultType="com.realchat.store.usr.dto.UserFriendRequest">
-	    INSERT INTO friend_request (
-	        id,
-	        sender_id,
-	        receiver_id,
-	        approved
-	    ) VALUES (
-	        #{id},
-	        #{user_id},
-	        #{friend_id},
-	        false
-	    )
-	    <selectKey keyProperty="id" resultType="String" order="BEFORE">
-	        SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
-	    </selectKey>
-	</insert>
-	
-	<!-- Delete a friend request -->
-	<delete id="deleteFriendRequest" parameterType="map">
-	    DELETE FROM friend_request
-	    WHERE sender_id = #{user_id} AND receiver_id = #{friend_id}
-	</delete>
-    
     <!-- Result Map for User -->
-    <resultMap id="UserResultMap" type="com.realchat.store.usr.dto.User">
+    <resultMap id="UserResultMap" type="com.realchat.store.usr.user.dto.User">
         <id property="id" column="id" />
         <result property="name" column="name" />
         <result property="email" column="email" />
@@ -152,6 +108,7 @@
         <result property="image" column="image" />
         <result property="password" column="password" />
         <result property="password_salt" column="password_salt" />
+        <result property="created_at" column="created_at" />
     </resultMap>
 
 </mapper>

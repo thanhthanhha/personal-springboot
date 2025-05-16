@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realchat.store.usr.friend.repository.FriendRepository">
+
+    <!-- Add a new friend relationship -->
+	<insert id="addFriend">
+	    INSERT INTO friend (
+	        user_id, 
+	        friend_id
+	    ) VALUES (
+	        #{user_id}, 
+	        #{friend_id}
+	    )
+	    <selectKey keyProperty="id" resultType="int" order="AFTER">
+	        SELECT SCOPE_IDENTITY() AS id
+	    </selectKey>
+	</insert>
+	    
+    <!-- Get a specific friend relationship -->
+    <select id="getFriend" resultType="com.realchat.store.usr.friend.dto.UserFriend">
+        SELECT 
+            id,
+            user_id,
+            friend_id,
+            created_at
+        FROM 
+            friend
+        WHERE 
+            user_id = #{user_id} AND friend_id = #{friend_id}
+    </select>
+    
+    <!-- List all friends for a user -->
+    <select id="listFriends" resultType="com.realchat.store.usr.friend.dto.UserFriend">
+        SELECT 
+            id,
+            user_id,
+            friend_id,
+            created_at
+        FROM 
+            friend
+        WHERE 
+            user_id = #{user_id}
+    </select>
+    
+    <!-- Delete a friend relationship -->
+    <delete id="deleteFriend">
+        DELETE FROM friend
+        WHERE user_id = #{user_id} AND friend_id = #{friend_id}
+    </delete>
+    
+    <!-- Result Map for Friend -->
+    <resultMap id="FriendResultMap" type="com.realchat.store.usr.friend.dto.UserFriend">
+        <id property="id" column="id" />
+        <result property="user_id" column="user_id" />
+        <result property="friend_id" column="friend_id" />
+        <result property="created_at" column="created_at" />
+    </resultMap>
+
+</mapper>

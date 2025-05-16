@@ -1,4 +1,4 @@
-package com.realchat.store.usr.dto;
+package com.realchat.store.usr.request.dto;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

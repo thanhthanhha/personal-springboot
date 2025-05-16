@@ -1,4 +1,4 @@
-package com.realchat.store.usr.dto;
+package com.realchat.store.usr.user.dto;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Builder;

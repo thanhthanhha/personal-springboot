@@ -20,6 +20,7 @@ CREATE TABLE app_user (
     password_salt VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     CONSTRAINT unique_user_id UNIQUE (user_id)
+    CONSTRAINT unique_email UNIQUE (email)
 );
 
 -- Create indexes for User table

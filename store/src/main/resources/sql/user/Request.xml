@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.realchat.store.usr.request.repository.FriendRequestRepository">
+
+    <!-- Add a new friend request -->
+    <insert id="addFriendRequest" parameterType="com.realchat.store.usr.request.dto.UserFriendRequest">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+        </selectKey>
+        INSERT INTO friend_request (
+            id,
+            sender_id,
+            receiver_id,
+            approved
+        ) VALUES (
+            #{id},
+            #{sender_id},
+            #{receiver_id},
+            false
+        )
+    </insert>
+    
+    <!-- Update a friend request -->
+    <update id="updateFriendRequest" parameterType="com.realchat.store.usr.request.dto.UserFriendRequest">
+        UPDATE friend_request
+        <set>
+            <if test="approved != null">approved = #{approved},</if>
+        </set>
+        WHERE sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+    </update>
+    
+    <!-- Find a specific friend request -->
+    <select id="getFriendRequest" resultType="com.realchat.store.usr.request.dto.UserFriendRequest">
+        SELECT 
+            id,
+            sender_id,
+            receiver_id,
+            approved,
+            created_at
+        FROM 
+            friend_request
+        WHERE 
+            sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+    </select>
+    
+    <!-- List all pending friend requests for a user -->
+    <select id="listPendingFriendRequests" resultType="com.realchat.store.usr.request.dto.UserFriendRequest">
+        SELECT 
+            id,
+            sender_id,
+            receiver_id,
+            approved,
+            created_at
+        FROM 
+            friend_request
+        WHERE 
+            receiver_id = #{user_id} AND approved = FALSE
+    </select>
+    
+    <!-- List all sent friend requests by a user -->
+    <select id="listSentFriendRequests" resultType="com.realchat.store.usr.request.dto.UserFriendRequest">
+        SELECT 
+            id,
+            sender_id,
+            receiver_id,
+            approved,
+            created_at
+        FROM 
+            friend_request
+        WHERE 
+            sender_id = #{user_id}
+    </select>
+    
+    <!-- Delete a friend request -->
+    <delete id="deleteFriendRequest">
+        DELETE FROM friend_request
+        WHERE sender_id = #{sender_id} AND receiver_id = #{receiver_id}
+    </delete>
+    
+    <!-- Result Map for Friend Request -->
+    <resultMap id="FriendRequestResultMap" type="com.realchat.store.usr.request.dto.UserFriendRequest">
+        <id property="id" column="id" />
+        <result property="sender_id" column="sender_id" />
+        <result property="receiver_id" column="receiver_id" />
+        <result property="approved" column="approved" />
+        <result property="created_at" column="created_at" />
+    </resultMap>
+
+</mapper>
