@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.email.email.repository.EmailRepository">
+
+    <resultMap id="EmailResultMap" type="com.email.email.dto.Email">
+        <id property="id" column="id"/>
+        <result property="subject" column="subject"/>
+        <result property="body" column="body"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="receiverId" column="receiver_id"/>
+        <result property="sentAt" column="sent_at"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <select id="getAllActiveEmail" resultMap="EmailResultMap">
+        SELECT
+            id,
+            subject,
+            body,
+            sender_id,
+            receiver_id,
+            sent_at,
+            is_deleted
+        FROM
+            email
+        WHERE
+            (sender_id = #{userId} OR receiver_id = #{userId})
+            AND is_deleted = false
+        ORDER BY
+            sent_at DESC
+    </select>
+
+    <select id="getCountAllActiveEmail" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            email
+        WHERE
+            (sender_id = #{userId} OR receiver_id = #{userId})
+            AND is_deleted = false
+    </select>
+
+    <select id="getEmailByQuery" resultMap="EmailResultMap" parameterType="com.email.email.dto.EmailQuery">
+        SELECT
+            id,
+            subject,
+            body,
+            sender_id,
+            receiver_id,
+            sent_at,
+            is_deleted
+        FROM
+            email
+        <where>
+            <if test="text != null and text != ''">
+                AND subject LIKE CONCAT('%', #{text}, '%')
+            </if>
+	       <if test="userId != null">
+	           AND (sender_id = #{userId} OR receiver_id = #{userId})
+	       </if>
+             AND is_deleted = false
+        </where>
+        ORDER BY sent_at DESC
+    </select>
+
+    <select id="existsEmailById" resultType="boolean">
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM email
+                WHERE id = #{Id}
+            )
+    </select>
+
+    <select id="existEmailWithUserId" resultType="boolean">
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM email
+                WHERE id = #{Id}
+                AND (sender_id = #{userId} OR receiver_id = #{userId})
+            )
+    </select>
+
+    <update id="deleteEmail" parameterType="com.email.email.dto.Email">
+        UPDATE email
+        SET is_deleted = true
+        WHERE id = #{id}
+    </update>
+
+    <insert id="registerEmail" parameterType="com.email.email.dto.Email" useGeneratedKeys="true" keyProperty="email.id">
+        INSERT INTO email (
+            subject,
+            body,
+            sender_id,
+            receiver_id,
+            sent_at,
+            is_deleted
+        ) VALUES (
+            #{subject},
+            #{body},
+            #{senderId},
+            #{receiverId},
+            #{sentAt},
+            false
+        )
+    </insert>
+
+</mapper>

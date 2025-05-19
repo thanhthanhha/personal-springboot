@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.email.user.repository.UserRepository">
+
+    <select id="getUsers" resultType="com.email.user.dto.User">
+        SELECT * FROM user
+    </select>
+
+    <select id="getUserById" resultType="com.email.user.dto.User">
+        SELECT * FROM user WHERE id = #{user_id}
+    </select>
+    
+	<select id="existsByEmailOrName" resultType="boolean">
+	    SELECT 
+	        CASE 
+	            WHEN COUNT(*) > 0 THEN true 
+	            ELSE false 
+	        END
+	    FROM "USER" 
+	    WHERE 
+	        (#{username} IS NOT NULL AND username = #{username})
+	        OR
+	        (#{email} IS NOT NULL AND email = #{email})
+	</select>
+
+    <insert id="registerUser" parameterType="com.email.user.dto.User">
+        <selectKey keyProperty="id" resultType="Long" order="BEFORE">
+            select next value for PUBLIC.USER_SEQUENCE from ( values 1 ); 
+        </selectKey>
+        
+        INSERT INTO user (id, username, email, inbox_limit, created_at)
+        VALUES (#{id}, #{username}, #{email}, #{inboxLimit}, #{createdAt})
+    </insert>
+    
+      <!-- Result Map for User -->
+    <resultMap id="UserResultMap" type="com.email.user.dto.User">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="email" column="email" />
+        <result property="inboxLimit" column="inbox_limit" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+</mapper>
