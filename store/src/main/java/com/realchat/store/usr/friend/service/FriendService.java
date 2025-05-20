@@ -11,14 +11,15 @@ import com.realchat.store.usr.request.dto.UserFriendRequest;
 import com.realchat.store.usr.friend.repository.FriendRepository;
 import com.realchat.store.usr.request.repository.RequestRepository;
 import com.realchat.store.exception.BusinessException;
+import org.springframework.http.HttpStatus;
 
 @Service("userFriend")
 public class FriendService {
 	@Autowired
-	private FriendRepository FriendRepository;
+	private FriendRepository friendRepository;
 	
 	@Autowired
-	private RequestRepository RequestRepository;
+	private RequestRepository requestRepository;
 	
 	//Friend
 	
@@ -43,13 +44,18 @@ public class FriendService {
         if (user_id.equals(friend_id)) {
             throw new BusinessException("User cannot add themselves as a friend");
         }
-        UserFriendRequest existingRequest = RequestRepository.getFriendRequest(user_id.trim(), friend_id.trim());
+        UserFriendRequest existingRequest = requestRepository.getFriendRequest(user_id.trim(), friend_id.trim());
 	    if (existingRequest == null) {
 	    	throw new BusinessException(String.format("Friend request between user %s and friend %s does not exist", user_id, friend_id));
 	    }
-        
+	    
+	    UserFriend userFriend = UserFriend.builder()
+	    		.user_id(user_id)
+	    		.friend_id(friend_id)
+	    		.build();
+	    
         // Call repository method to add friend
-        return FriendRepository.addFriend(user_id, friend_id);
+        return userFriend;
     }
     
     
@@ -76,7 +82,7 @@ public class FriendService {
         String trimmedFriendId = friend_id.trim();
         
         // Call repository method to find the friendship
-        UserFriend friendship = FriendRepository.getFriend(trimmedUserId, trimmedFriendId);
+        UserFriend friendship = friendRepository.getFriend(trimmedUserId, trimmedFriendId);
         
         if (friendship == null) {
             throw new BusinessException(String.format("Friendship between user '%s' and friend '%s' does not exist", 
@@ -103,7 +109,7 @@ public class FriendService {
         String trimmedUserId = user_id.trim();
         
         // Call repository method to list friends
-        List<UserFriend> friends = FriendRepository.listFriends(trimmedUserId);
+        List<UserFriend> friends = friendRepository.listFriends(trimmedUserId);
         
         return friends;
     }
@@ -126,8 +132,15 @@ public class FriendService {
             throw new BusinessException("Friend ID is required");
         }
         
+        UserFriend friendship = friendRepository.getFriend(user_id, friend_id);
+        
+        if (friendship == null) {
+            throw new BusinessException(String.format("Friendship between user '%s' and friend '%s' does not exist", 
+            		user_id, friend_id), HttpStatus.NOT_FOUND);
+        }
+        
         // Call repository method to delete friend
-        return FriendRepository.deleteFriend(user_id, friend_id);
+        return friendRepository.deleteFriend(user_id, friend_id);
     }
     
 }

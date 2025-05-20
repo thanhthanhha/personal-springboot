@@ -14,10 +14,10 @@ import com.realchat.store.usr.friend.service.FriendService;
 @Service("userRequest")
 public class RequestService {
 	@Autowired
-	private RequestRepository RequestRepository;
+	private RequestRepository requestRepository;
 	
 	@Autowired
-	private FriendService FriendService;
+	private FriendService friendService;
 	
     //Friend Request
     
@@ -43,12 +43,12 @@ public class RequestService {
             throw new BusinessException("User cannot send a friend request to themselves");
         }
         
-        UserFriendRequest existingRequest = RequestRepository.getFriendRequest(sender_id.trim(), receiver_id.trim());
+        UserFriendRequest existingRequest = requestRepository.getFriendRequest(sender_id.trim(), receiver_id.trim());
 	    if (existingRequest == null) {
 	    	throw new BusinessException(String.format("Friend request between user %s and friend %s does not exist", sender_id, receiver_id));
 	    }
         // Call repository method to add friend request
-        return RequestRepository.addFriendRequest(sender_id, receiver_id);
+        return requestRepository.addFriendRequest(sender_id, receiver_id);
     }
     
     /**
@@ -74,7 +74,7 @@ public class RequestService {
         String trimmedReceiverId = receiver_id.trim();
         
         // Call repository method to find the friend request
-        UserFriendRequest friendRequest = RequestRepository.getFriendRequest(trimmedSenderId, trimmedReceiverId);
+        UserFriendRequest friendRequest = requestRepository.getFriendRequest(trimmedSenderId, trimmedReceiverId);
         
         if (friendRequest == null) {
             throw new BusinessException(String.format("Friend request from sender '%s' to receiver '%s' does not exist", 
@@ -101,7 +101,7 @@ public class RequestService {
         String trimmedUserId = user_id.trim();
         
         // Call repository method to list pending friend requests
-        List<UserFriendRequest> pendingRequests = RequestRepository.listPendingFriendRequests(trimmedUserId);
+        List<UserFriendRequest> pendingRequests = requestRepository.listPendingFriendRequests(trimmedUserId);
         
         return pendingRequests;
     }
@@ -123,7 +123,7 @@ public class RequestService {
         String trimmedUserId = user_id.trim();
         
         // Call repository method to list sent friend requests
-        List<UserFriendRequest> sentRequests = RequestRepository.listSentFriendRequests(trimmedUserId);
+        List<UserFriendRequest> sentRequests = requestRepository.listSentFriendRequests(trimmedUserId);
         
         return sentRequests;
     }
@@ -153,7 +153,7 @@ public class RequestService {
 	    
 	    // First, get the existing friend request
 	    // You'll need to add a method to find the request
-	    UserFriendRequest existingRequest = RequestRepository.getFriendRequest(trimmedSenderId, trimmedReceiverId);
+	    UserFriendRequest existingRequest = requestRepository.getFriendRequest(trimmedSenderId, trimmedReceiverId);
 	    
 	    if (existingRequest == null) {
 	    	throw new BusinessException(String.format("Friend request between user %s and friend %s does not exist", sender_id, receiver_id));
@@ -163,11 +163,11 @@ public class RequestService {
 	    existingRequest.setApproved(true);
 	    
 	    // Add the friendship relationship
-	    FriendService.addFriend(trimmedSenderId, trimmedReceiverId);
+	    friendService.addFriend(trimmedSenderId, trimmedReceiverId);
 	    
 	    // Update the friend request
 	    // You need to add this method to your repository
-	    return RequestRepository.updateFriendRequest(existingRequest);
+	    return requestRepository.updateFriendRequest(existingRequest);
 	}
     
     /**
@@ -188,7 +188,7 @@ public class RequestService {
         }
         
         // Call repository method to delete friend request
-        return RequestRepository.deleteFriendRequest(sender_id, receiver_id);
+        return requestRepository.deleteFriendRequest(sender_id, receiver_id);
     }
     
 }

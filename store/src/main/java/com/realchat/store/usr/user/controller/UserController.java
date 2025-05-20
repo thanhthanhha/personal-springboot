@@ -1,11 +1,17 @@
 package com.realchat.store.usr.user.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.realchat.store.usr.user.dto.User;
@@ -19,45 +25,56 @@ import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
-	private UserService UserService;
-	
-	@Operation(summary = "Register User", description = "Register User")
-	@RequestMapping(method = RequestMethod.POST, path = "/rest/v1")
-	public int registerUser(@RequestBody User User) throws Exception {
-		return UserService.registerUser(User);
-	}
-	
-	@Operation(summary = "Update User", description = "Update User")
-	@RequestMapping(method = RequestMethod.PUT, path = "/rest/v1/{user_id}")
-	public User updateUser(@RequestBody User User, @PathVariable String user_id) throws Exception {
-		return UserService.updateUser(User, user_id);
-	}
-	
-	@Operation(summary = "Delete User", description = "Delete User")
-	@RequestMapping(method = RequestMethod.DELETE, path = "/rest/v1/{user_id}")
-	public int deleteUser(@PathVariable String user_id) throws Exception {
-		return UserService.deleteUser(user_id);
-	}
-	
-	@Operation(summary = "List User", description = "List User")
-	@RequestMapping(method = RequestMethod.GET, path = "/rest/v1")
-	public List<User> listUser(@RequestBody UserQuery UserQuery) throws Exception {
-		return UserService.listUser(UserQuery);
-	}
-	
-	@Operation(summary = "Get User", description = "Get User")
-	@RequestMapping(method = RequestMethod.GET, path = "/rest/v1/{searchCrit}")
-	public User getUser(@PathVariable String searchCrit) throws Exception {
-		if (StringUtils.isValidEmail(searchCrit)) {
-			return UserService.getUser(null, searchCrit);
-		} else {
-	        // If searchCrit is not an email, pass it as user_id parameter and null as email
-	        return UserService.getUser(searchCrit, null);
-	    }
-	}
+    @Autowired
+    private UserService userService;
+    
+    @Operation(summary = "Register User", description = "Register User")
+    @RequestMapping(method = RequestMethod.POST, path = "/rest/v1")
+    public ResponseEntity<User> registerUser(@RequestBody User User) throws Exception {
+        User result = userService.registerUser(User);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    }
+    
+    @Operation(summary = "Update User", description = "Update User")
+    @RequestMapping(method = RequestMethod.PUT, path = "/rest/v1/{user_id}")
+    public ResponseEntity<User> updateUser(@RequestBody User User, @PathVariable String user_id) throws Exception {
+        User updatedUser = userService.updateUser(User, user_id);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+    
+    @Operation(summary = "Delete User", description = "Delete User")
+    @RequestMapping(method = RequestMethod.DELETE, path = "/rest/v1/{user_id}")
+    public ResponseEntity<Integer> deleteUser(@PathVariable String user_id) throws Exception {
+        int result = userService.deleteUser(user_id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    
+    @Operation(summary = "List User", description = "List User")
+    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1")
+    public ResponseEntity<List<User>> listUser(@RequestBody UserQuery UserQuery) throws Exception {
+        List<User> users = userService.listUser(UserQuery);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+    
+    @Operation(summary = "Get User", description = "Get User")
+    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1/search")
+    public ResponseEntity<User> getUser(@RequestParam String query) throws Exception {
+        User user;
+        if (StringUtils.isValidEmail(query)) {
+            user = userService.getUser(null, query);
+        } else {
+            // If searchCrit is not an email, pass it as user_id parameter and null as email
+            user = userService.getUser(query, null);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
+    @Operation(summary = "Authenticate User", description = "Authenticate User")
+    @RequestMapping(method = RequestMethod.POST, path = "/rest/v1/auth")
+    public ResponseEntity<?> authUser(@RequestBody UserAuth UserAuth) throws Exception {
+        boolean result = userService.authUser(UserAuth);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("auth", result);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }
-
-
-
-

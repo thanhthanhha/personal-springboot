@@ -82,6 +82,12 @@
         </where>
     </select>
     
+    <select id="existsByUserId" parameterType="String" resultType="boolean">
+	    SELECT COUNT(*) > 0
+	    FROM app_user
+	    WHERE user_id = #{user_id}
+	</select>
+    
     <!-- Authenticate user -->
     <select id="authUser" parameterType="com.realchat.store.usr.user.dto.UserAuth" resultType="boolean">
         SELECT COUNT(*) > 0

@@ -4,6 +4,9 @@
 
     <!-- Add a new friend relationship -->
 	<insert id="addFriend">
+	    <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
+        </selectKey>
 	    INSERT INTO friend (
 	        user_id, 
 	        friend_id
@@ -11,9 +14,6 @@
 	        #{user_id}, 
 	        #{friend_id}
 	    )
-	    <selectKey keyProperty="id" resultType="int" order="AFTER">
-	        SELECT SCOPE_IDENTITY() AS id
-	    </selectKey>
 	</insert>
 	    
     <!-- Get a specific friend relationship -->

@@ -13,6 +13,7 @@ import com.realchat.store.usr.user.dto.User;
 import com.realchat.store.usr.user.dto.UserAuth;
 import com.realchat.store.usr.user.dto.UserQuery;
 import com.realchat.store.exception.BusinessException;
+import org.springframework.http.HttpStatus;
 
 import com.realchat.store.utils.StringUtils;
 import com.realchat.store.utils.SecurityUtils;
@@ -20,13 +21,13 @@ import com.realchat.store.utils.SecurityUtils;
 @Service("userService")
 public class UserService {
 	@Autowired
-	private UserRepository UserRepository;
+	private UserRepository userRepository;
 	
 	
 	//User
 	
 	@Transactional(rollbackFor = Exception.class)
-	public int registerUser(User user) throws Exception {
+	public User registerUser(User user) throws Exception {
 	    // Validate mandatory fields
 	    if (user.getName() == null || user.getName().trim().isEmpty()) {
 	        throw new BusinessException("User name is required");
@@ -58,8 +59,10 @@ public class UserService {
             throw new BusinessException("Error during password hashing: " + e.getMessage());
         }
 	    
+        userRepository.registerUser(user);
+       
 	    // Call repository method to register user
-	    return UserRepository.registerUser(user);
+	    return user;
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
@@ -70,7 +73,7 @@ public class UserService {
 	    }
 	    
 	    // Call repository method to update user
-	    return UserRepository.updateUser(user, user_id);
+	    return userRepository.updateUser(user, user_id);
 	}
 	
 	@Transactional(readOnly = true)
@@ -85,7 +88,7 @@ public class UserService {
         }
 	    
 	    // Call repository method to get user
-	    return UserRepository.listUser(userQuery);
+	    return userRepository.listUser(userQuery);
 	}
 	
 	@Transactional(readOnly = true)
@@ -102,10 +105,10 @@ public class UserService {
 	    		.email(List.of(email))
 	    		.build();
 	    
-	    List<User> result = UserRepository.listUser(query);
+	    List<User> result = userRepository.listUser(query);
 	    
 	    if (result == null || result.isEmpty()) {
-	    	throw new BusinessException("User don't exist");
+	    	throw new BusinessException("User don't exist", HttpStatus.NOT_FOUND);
 	    }
 	    
 	    if (!(result.get(0) instanceof User)) {
@@ -123,8 +126,12 @@ public class UserService {
 	        throw new BusinessException("User ID is required");
 	    }
 	    
+	    if (!userRepository.existsByUserId(user_id)) {
+	    	throw new BusinessException("User ID is required", HttpStatus.NOT_FOUND);
+	    }
+	    
 	    // Call repository method to delete user
-	    return UserRepository.deleteUser(user_id);
+	    return userRepository.deleteUser(user_id);
 	}	  
     
     //Auth
@@ -160,7 +167,7 @@ public class UserService {
             userAuth.setPassword(hashedPassword);
             
             // Call repository method to authenticate user
-            return UserRepository.authUser(userAuth);
+            return userRepository.authUser(userAuth);
         } catch (NoSuchAlgorithmException e) {
             throw new BusinessException("Error during password hashing: " + e.getMessage());
         }

@@ -17,7 +17,7 @@ public interface UserRepository {
 	public User updateUser(@Param("user") User user, @Param("user_id") String user_id) throws Exception;
 	public int deleteUser(String user_id) throws Exception;
 	public List<User> listUser(UserQuery UserQuery) throws Exception;
-	
+	public boolean existsByUserId(String user_id) throws Exception;
 	//Auth
 	public boolean authUser(UserAuth UserAuth) throws Exception;
 }
