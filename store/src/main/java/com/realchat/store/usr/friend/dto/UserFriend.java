@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,13 +15,13 @@ public class UserFriend implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private String id;            
+    private UUID id;            
     private String user_id;     
     private String friend_id;        
     private Timestamp created_at; 
     
     @Builder
-    public UserFriend(String id, String user_id, String friend_id, 
+    public UserFriend(UUID id, String user_id, String friend_id, 
     		Timestamp created_at) {
         super();
         this.id = id;

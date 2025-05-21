@@ -1,0 +1,5 @@
+<configuration>
+    <typeHandlers>
+        <typeHandler handler="com.realchat.store.common.handler.UUIDTypeHandler" javaType="java.util.UUID" jdbcType="OTHER"/>
+    </typeHandlers>
+</configuration>

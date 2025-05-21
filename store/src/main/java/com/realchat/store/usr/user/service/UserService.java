@@ -12,16 +12,21 @@ import com.realchat.store.usr.user.repository.UserRepository;
 import com.realchat.store.usr.user.dto.User;
 import com.realchat.store.usr.user.dto.UserAuth;
 import com.realchat.store.usr.user.dto.UserQuery;
+import com.realchat.store.utils.LoggerUtils;
 import com.realchat.store.exception.BusinessException;
+import com.realchat.store.exception.SystemException;
 import org.springframework.http.HttpStatus;
 
 import com.realchat.store.utils.StringUtils;
 import com.realchat.store.utils.SecurityUtils;
+import java.util.UUID;
 
 @Service("userService")
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
+	
+	private static final LoggerUtils logger = LoggerUtils.getLogger(UserService.class);
 	
 	
 	//User
@@ -30,35 +35,40 @@ public class UserService {
 	public User registerUser(User user) throws Exception {
 	    // Validate mandatory fields
 	    if (user.getName() == null || user.getName().trim().isEmpty()) {
-	        throw new BusinessException("User name is required");
+	        throw new BusinessException("User name is required", HttpStatus.BAD_REQUEST);
 	    }
 	    
 	    if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-	        throw new BusinessException("Email is required");
+	        throw new BusinessException("Email is required", HttpStatus.BAD_REQUEST);
 	    }
 	    
 	    // Password is optional in the schema but typically required for registration
 	    if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-	        throw new BusinessException("Password is required for registration");
+	        throw new BusinessException("Password is required for registration", HttpStatus.BAD_REQUEST);
+	    }
+	    
+	    if (userRepository.existsByUserEmail(user.getEmail())) {
+	    	throw new BusinessException("Email already exist", HttpStatus.CONFLICT);
 	    }
 	    
 	    // Generate 6-character user_id
 	    String generatedUserId = StringUtils.generateRandomAlphanumeric(6);
 	    user.setUser_id(generatedUserId);
+	    user.setId(UUID.randomUUID());
 	    
         try {
             // Generate a random salt (16 bytes)
             String salt = SecurityUtils.generateSalt(16);
-            user.setPassword_salt(salt);
+            user.setPasswordSalt(salt);
             
             // Hash the password with the salt
             String hashedPassword = SecurityUtils.hashPassword(user.getPassword(), salt);
             user.setPassword(hashedPassword);
-            user.setPassword_salt(salt);
         } catch (NoSuchAlgorithmException e) {
-            throw new BusinessException("Error during password hashing: " + e.getMessage());
+            throw new SystemException("Error during password hashing: " + e.getMessage());
         }
 	    
+        logger.info(String.format("Saving user with ID: %s", user.getId()));
         userRepository.registerUser(user);
        
 	    // Call repository method to register user
@@ -72,20 +82,36 @@ public class UserService {
 	        throw new BusinessException("User ID is required");
 	    }
 	    
+	    User existUser = this.getUser(user_id, null);
+	    
+	    if (existUser == null) {
+	    	throw new BusinessException("User don't exist", HttpStatus.NOT_FOUND);
+	    }
+	    
+	    if (user.getPassword() != null) {
+		    String password_salt = existUser.getPasswordSalt();
+		    logger.info(String.format("User %s Salt is %s", existUser.getName(), existUser.getPasswordSalt()));
+	        try {
+	            // Hash the password with the salt
+	            String hashedPassword = SecurityUtils.hashPassword(user.getPassword(), password_salt);
+	            user.setPassword(hashedPassword);
+	        } catch (NoSuchAlgorithmException e) {
+	            throw new SystemException("Error during password hashing: " + e.getMessage());
+	        }
+	    }
+	    
+	    userRepository.updateUser(user);
+	    
 	    // Call repository method to update user
-	    return userRepository.updateUser(user, user_id);
+	    return user;
 	}
 	
 	@Transactional(readOnly = true)
 	public List<User> listUser(UserQuery userQuery) throws Exception {
 	    // Validate mandatory fields
-	    if ((userQuery.getId() == null || userQuery.getId().isEmpty()) && 
-            (userQuery.getName() == null || userQuery.getName().isEmpty()) &&
-            (userQuery.getEmail() == null || userQuery.getEmail().isEmpty()) &&
-            (userQuery.getUser_id() == null || userQuery.getUser_id().isEmpty()) &&
-            (userQuery.getImage() == null || userQuery.getImage().isEmpty())) {
-            throw new BusinessException("At least one search criteria is required");
-        }
+	    if (userQuery == null) {
+	        userQuery = new UserQuery();
+	    }
 	    
 	    // Call repository method to get user
 	    return userRepository.listUser(userQuery);
@@ -94,29 +120,25 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User getUser(String user_id, String email) throws Exception {
 	    // Validate mandatory fields
-	    if ((user_id == null || user_id.isEmpty()) ||
-            (email == null || email.isEmpty())) {
-            throw new BusinessException("At least one search criteria is required");
-        }
-	    
-	 // Create a UserQuery with only user_id and email in one line
-	    UserQuery query = UserQuery.builder()
-	    		.user_id(List.of(user_id))
-	    		.email(List.of(email))
-	    		.build();
-	    
-	    List<User> result = userRepository.listUser(query);
-	    
-	    if (result == null || result.isEmpty()) {
-	    	throw new BusinessException("User don't exist", HttpStatus.NOT_FOUND);
-	    }
-	    
-	    if (!(result.get(0) instanceof User)) {
-	        throw new BusinessException("Invalid data type in result list");
+	    if ((user_id == null || user_id.isEmpty()) &&
+	        (email == null || email.isEmpty())) {
+	        throw new BusinessException(String.format("At least one search criteria is required: user id %s email %s", user_id, email));
 	    }
 
-	    // Call repository method to get user
-	    return result.get(0);
+	    logger.info(String.format("Querying user %s %s", user_id, email));
+	    
+	    User user = new User();
+	    
+	    if  (email != null && !email.isEmpty()) {
+	    	user.setEmail(email);
+	    } else if (user_id != null && !user_id.isEmpty()) {
+	    	user.setUser_id(user_id);
+	    }
+	    
+	    logger.info(String.format("Querying user after object creation %s %s", user.getEmail(), user.getUser_id()));
+	    
+	    // Return the first user found
+	    return userRepository.getUserByKey(user);
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
@@ -132,7 +154,27 @@ public class UserService {
 	    
 	    // Call repository method to delete user
 	    return userRepository.deleteUser(user_id);
-	}	  
+	}	 
+	
+	@Transactional(readOnly = true)
+	public boolean existsByUserEmail(String email) throws Exception {
+	    // Validate mandatory fields
+	    if (email == null || email.trim().isEmpty()) {
+	        throw new BusinessException("User Email is required");
+	    }
+	    
+	    return userRepository.existsByUserEmail(email);
+	}
+	
+	@Transactional(readOnly = true)
+	public boolean existsByUserId(String user_id) throws Exception {
+	    // Validate mandatory fields
+	    if (user_id == null || user_id.trim().isEmpty()) {
+	        throw new BusinessException("User ID is required");
+	    }
+	    
+	    return userRepository.existsByUserId(user_id);
+	}
     
     //Auth
     /**
@@ -153,16 +195,17 @@ public class UserService {
             throw new BusinessException("Password is required for authentication");
         }
         
-        User user = this.getUser(userAuth.getEmail(), userAuth.getUser_id());
+        User user = this.getUser(userAuth.getUser_id(), userAuth.getEmail());
         
         if (user == null) {
-        	throw new BusinessException("User don't exist");
+        	throw new BusinessException(String.format("User don't exist in auth %s and %s", userAuth.getEmail(), userAuth.getUser_id()), HttpStatus.NOT_FOUND);
         }
         
         try {
             // Hash the provided password with the stored salt
-            String hashedPassword = SecurityUtils.hashPassword(userAuth.getPassword(), user.getPassword_salt());
+            String hashedPassword = SecurityUtils.hashPassword(userAuth.getPassword(), user.getPasswordSalt());
             
+            logger.info(String.format("Compare password %s and %s", hashedPassword, user.getPassword()));
             // Set the hashed password in the userAuth object
             userAuth.setPassword(hashedPassword);
             

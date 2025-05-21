@@ -3,6 +3,7 @@ package com.realchat.store.usr.user.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.realchat.store.exception.BusinessException;
+import com.realchat.store.exception.SystemException;
+
 
 import com.realchat.store.usr.user.dto.User;
 import com.realchat.store.usr.user.dto.UserAuth;
@@ -32,7 +36,17 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/rest/v1")
     public ResponseEntity<User> registerUser(@RequestBody User User) throws Exception {
         User result = userService.registerUser(User);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    
+    @Operation(summary = "Get User By Id", description = "Get User By Id")
+    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1/{user_id}")
+    public ResponseEntity<User> getUserById(@PathVariable String user_id) throws Exception {
+        User result = userService.getUser(user_id, null);
+        if (result == null) {
+        	throw new BusinessException("User not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
     
     @Operation(summary = "Update User", description = "Update User")
@@ -50,24 +64,30 @@ public class UserController {
     }
     
     @Operation(summary = "List User", description = "List User")
-    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1")
-    public ResponseEntity<List<User>> listUser(@RequestBody UserQuery UserQuery) throws Exception {
-        List<User> users = userService.listUser(UserQuery);
+    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1/search")
+    public ResponseEntity<List<User>> listUser(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String user_id) throws Exception {
+        
+        // Convert comma-separated strings to lists (if not null)
+        List<String> nameList = name != null ? List.of(name.split(",")) : null;
+        List<String> emailList = email != null ? List.of(email.split(",")) : null;
+        List<String> userIdList = user_id != null ? List.of(user_id.split(",")) : null;
+        
+        // Build the UserQuery with the lists
+        UserQuery userQuery = UserQuery.builder()
+                .name(nameList)
+                .email(emailList)
+                .user_id(userIdList)
+                .build();
+        
+        // Call the service
+        List<User> users = userService.listUser(userQuery);
+        
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
     
-    @Operation(summary = "Get User", description = "Get User")
-    @RequestMapping(method = RequestMethod.GET, path = "/rest/v1/search")
-    public ResponseEntity<User> getUser(@RequestParam String query) throws Exception {
-        User user;
-        if (StringUtils.isValidEmail(query)) {
-            user = userService.getUser(null, query);
-        } else {
-            // If searchCrit is not an email, pass it as user_id parameter and null as email
-            user = userService.getUser(query, null);
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
     
     @Operation(summary = "Authenticate User", description = "Authenticate User")
     @RequestMapping(method = RequestMethod.POST, path = "/rest/v1/auth")

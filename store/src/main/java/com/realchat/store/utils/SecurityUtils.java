@@ -28,7 +28,14 @@ public class SecurityUtils {
      * @throws NoSuchAlgorithmException If the hashing algorithm is not available
      */
     public static String hashPassword(String password, String salt) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+        if (salt == null) {
+            throw new IllegalArgumentException("Salt cannot be null");
+        }
+    	
+    	MessageDigest md = MessageDigest.getInstance("SHA-256");
         
         // Decode salt from Base64
         byte[] decodedSalt = Base64.getDecoder().decode(salt);

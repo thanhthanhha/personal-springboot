@@ -4,9 +4,6 @@
 
     <!-- Add a new friend request -->
     <insert id="addFriendRequest" parameterType="com.realchat.store.usr.request.dto.UserFriendRequest">
-        <selectKey keyProperty="id" resultType="String" order="BEFORE">
-            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
-        </selectKey>
         INSERT INTO friend_request (
             id,
             sender_id,

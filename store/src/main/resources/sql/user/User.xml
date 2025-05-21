@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.realchat.store.usr.repository.UserRepository">
+<mapper namespace="com.realchat.store.usr.user.repository.UserRepository">
 
     <!-- Register a new user -->
     <insert id="registerUser" parameterType="com.realchat.store.usr.user.dto.User">
-        <selectKey keyProperty="id" resultType="String" order="BEFORE">
-            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
-        </selectKey>
         INSERT INTO app_user (
             id, 
             name, 
@@ -34,7 +31,6 @@
             <if test="email != null">email = #{email},</if>
             <if test="image != null">image = #{image},</if>
             <if test="password != null">password = #{password},</if>
-            <if test="password_salt != null">password_salt = #{password_salt},</if>
         </set>
         WHERE user_id = #{user_id}
     </update>
@@ -82,28 +78,60 @@
         </where>
     </select>
     
+        <!-- List users based on query parameters -->
+    <select id="getUserByKey" parameterType="com.realchat.store.usr.user.dto.User" resultType="com.realchat.store.usr.user.dto.User">
+        SELECT 
+            *
+        FROM app_user
+        WHERE
+       	<choose>
+       		<when test="id != null and id != ''">
+	            id = #{id}
+	        </when>
+	        <when test="email != null and email != ''">
+	            email = #{email}
+	        </when>
+	        <when test="user_id != null and user_id != ''">
+	            user_id = #{user_id}
+	        </when>
+	        <otherwise>
+	            1=2 <!-- This creates a FALSE condition if both email and user_id are missing -->
+	        </otherwise>
+	    </choose>
+    </select>
+    
     <select id="existsByUserId" parameterType="String" resultType="boolean">
 	    SELECT COUNT(*) > 0
 	    FROM app_user
 	    WHERE user_id = #{user_id}
 	</select>
+	
+	<select id="existsByUserEmail" parameterType="String" resultType="boolean">
+	    SELECT COUNT(*) > 0
+	    FROM app_user
+	    WHERE email = #{email}
+	</select>
     
     <!-- Authenticate user -->
-    <select id="authUser" parameterType="com.realchat.store.usr.user.dto.UserAuth" resultType="boolean">
-        SELECT COUNT(*) > 0
-        FROM app_user
-        WHERE 
-            <if test="email != null">
-                email = #{email}
-            </if>
-            <if test="user_id != null">
-                <if test="email != null">AND</if> 
-                user_id = #{user_id}
-            </if>
-            <if test="password != null">
-                AND password = #{password}
-            </if>
-    </select>
+ 	<select id="authUser" parameterType="com.realchat.store.usr.user.dto.UserAuth" resultType="boolean">
+	    SELECT COUNT(*) > 0
+	    FROM app_user
+	    WHERE
+	    <choose>
+	        <when test="email != null and email != ''">
+	            email = #{email}
+	        </when>
+	        <when test="user_id != null and user_id != ''">
+	            user_id = #{user_id}
+	        </when>
+	        <otherwise>
+	            1=2 <!-- This creates a FALSE condition if both email and user_id are missing -->
+	        </otherwise>
+	    </choose>
+	    <if test="password != null and password != ''">
+	        AND password = #{password}
+	    </if>
+	</select>
     
     <!-- Result Map for User -->
     <resultMap id="UserResultMap" type="com.realchat.store.usr.user.dto.User">
@@ -113,7 +141,7 @@
         <result property="user_id" column="user_id" />
         <result property="image" column="image" />
         <result property="password" column="password" />
-        <result property="password_salt" column="password_salt" />
+        <result property="passwordSalt" column="password_salt" />
         <result property="created_at" column="created_at" />
     </resultMap>
 

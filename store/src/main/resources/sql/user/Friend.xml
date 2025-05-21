@@ -3,14 +3,13 @@
 <mapper namespace="com.realchat.store.usr.friend.repository.FriendRepository">
 
     <!-- Add a new friend relationship -->
-	<insert id="addFriend">
-	    <selectKey keyProperty="id" resultType="String" order="BEFORE">
-            SELECT REPLACE(CAST(NEWID() AS VARCHAR(50)), '-', '')
-        </selectKey>
+	<insert id="addFriend" parameterType="com.realchat.store.usr.friend.dto.UserFriend">
 	    INSERT INTO friend (
+	    	id,
 	        user_id, 
 	        friend_id
 	    ) VALUES (
+	    	#{id},
 	        #{user_id}, 
 	        #{friend_id}
 	    )

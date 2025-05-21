@@ -1,6 +1,7 @@
 package com.realchat.store.usr.friend.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,9 +53,12 @@ public class FriendService {
 	    UserFriend userFriend = UserFriend.builder()
 	    		.user_id(user_id)
 	    		.friend_id(friend_id)
+	    		.id(UUID.randomUUID())
 	    		.build();
 	    
         // Call repository method to add friend
+	    
+	    friendRepository.addFriend(userFriend);
         return userFriend;
     }
     

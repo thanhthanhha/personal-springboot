@@ -1,6 +1,7 @@
 package com.realchat.store.usr.request.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,18 @@ public class RequestService {
 	    if (existingRequest == null) {
 	    	throw new BusinessException(String.format("Friend request between user %s and friend %s does not exist", sender_id, receiver_id));
 	    }
+	    
+	    UserFriendRequest friendRequest = UserFriendRequest.builder()
+	    		.id(UUID.randomUUID())
+	    		.receiver_id(receiver_id)
+	    		.sender_id(sender_id)
+	    		.approved(false)
+	    		.build();
+	    
         // Call repository method to add friend request
-        return requestRepository.addFriendRequest(sender_id, receiver_id);
+        requestRepository.addFriendRequest(friendRequest);
+        
+        return friendRequest;
     }
     
     /**
@@ -167,7 +178,9 @@ public class RequestService {
 	    
 	    // Update the friend request
 	    // You need to add this method to your repository
-	    return requestRepository.updateFriendRequest(existingRequest);
+	    requestRepository.updateFriendRequest(existingRequest);
+	    
+	    return existingRequest;
 	}
     
     /**
