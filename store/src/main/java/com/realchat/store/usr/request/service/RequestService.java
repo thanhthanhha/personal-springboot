@@ -9,8 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.realchat.store.usr.request.dto.UserFriendRequest;
 import com.realchat.store.usr.request.repository.RequestRepository;
+import com.realchat.store.usr.user.service.UserService;
 import com.realchat.store.exception.BusinessException;
 import com.realchat.store.usr.friend.service.FriendService;
+import com.realchat.store.usr.friend.dto.UserFriend;
+import com.realchat.store.usr.friend.repository.FriendRepository;
+import com.realchat.store.usr.user.repository.UserRepository;
+import com.realchat.store.usr.user.dto.User;
+import com.realchat.store.utils.LoggerUtils;
+
+import org.springframework.http.HttpStatus;
 
 @Service("userRequest")
 public class RequestService {
@@ -18,7 +26,15 @@ public class RequestService {
 	private RequestRepository requestRepository;
 	
 	@Autowired
+	private FriendRepository friendRepository;
+	
+	@Autowired
 	private FriendService friendService;
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	private static final LoggerUtils logger = LoggerUtils.getLogger(UserService.class);
 	
     //Friend Request
     
@@ -33,20 +49,32 @@ public class RequestService {
     public UserFriendRequest addFriendRequest(String sender_id, String receiver_id) throws Exception {
         // Validate mandatory fields
         if (sender_id == null || sender_id.trim().isEmpty()) {
-            throw new BusinessException("Sender ID is required");
+            throw new BusinessException("Sender ID is required", HttpStatus.BAD_REQUEST);
         }
         
         if (receiver_id == null || receiver_id.trim().isEmpty()) {
-            throw new BusinessException("Receiver ID is required");
+            throw new BusinessException("Receiver ID is required", HttpStatus.BAD_REQUEST);
         }
         
         if (sender_id.equals(receiver_id)) {
-            throw new BusinessException("User cannot send a friend request to themselves");
+            throw new BusinessException("User cannot send a friend request to themselves", HttpStatus.CONFLICT);
         }
         
+        logger.info(String.format("Check sender id %s and receiver id %s", sender_id, receiver_id));
+        
         UserFriendRequest existingRequest = requestRepository.getFriendRequest(sender_id.trim(), receiver_id.trim());
-	    if (existingRequest == null) {
-	    	throw new BusinessException(String.format("Friend request between user %s and friend %s does not exist", sender_id, receiver_id));
+	    if (existingRequest != null) {
+	    	throw new BusinessException(String.format("Friend request between user %s and friend %s exist", sender_id, receiver_id), HttpStatus.CONFLICT);
+	    }
+	    
+	    if (!userRepository.existsByUserId(sender_id) || !userRepository.existsByUserId(receiver_id)) {
+	    	throw new BusinessException(String.format("Sender or Reciever ID does not exist"), HttpStatus.NOT_FOUND);
+	    }
+	    
+	    UserFriend existingFriendship = friendRepository.getFriend(sender_id, receiver_id);
+	    
+	    if (existingFriendship != null) {
+	    	throw new BusinessException(String.format("User %s is already friend with %s",sender_id, receiver_id), HttpStatus.CONFLICT);
 	    }
 	    
 	    UserFriendRequest friendRequest = UserFriendRequest.builder()

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.realchat.store.usr.request.repository.FriendRequestRepository">
+<mapper namespace="com.realchat.store.usr.request.repository.RequestRepository">
 
     <!-- Add a new friend request -->
     <insert id="addFriendRequest" parameterType="com.realchat.store.usr.request.dto.UserFriendRequest">
